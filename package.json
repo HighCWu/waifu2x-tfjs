@@ -1,0 +1,46 @@
+{
+  "name": "waifu2x-tfjs",
+  "version": "0.0.1",
+  "author": "HighCWu <highcwu@163.com>",
+  "description": "Image super-resolution using tensorflow.js",
+  "keywords": [
+    "image processing",
+    "super resolution",
+    "cnn",
+    "convolutional neural network",
+    "tfjs"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/HighCWu/waifu2x-tfjs",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HighCWu/waifu2x-tfjs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/HighCWu/waifu2x-tfjs/issues"
+  },
+  "main": "./build/node/index.js",
+  "scripts": {
+    "start": "gulp",
+    "install": "gulp build"
+  },
+  "dependencies": {
+    "@tensorflow/tfjs": "^0.12.4"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-env": "^1.7.0",
+    "babelify": "^8.0.0",
+    "browser-sync": "^1.8.1",
+    "browserify": "^7.0.3",
+    "gulp": "^3.8.10",
+    "gulp-babel": "^5.3.0",
+    "gulp-notify": "^2.1.0",
+    "gulp-util": "^3.0.1",
+    "pretty-hrtime": "^0.2.2",
+    "require-dir": "^0.3.2",
+    "vinyl-source-stream": "^1.0.0",
+    "watchify": "^2.2.1"
+  }
+}
