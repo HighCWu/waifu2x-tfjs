@@ -10,7 +10,6 @@ Image.open = async (fp, mode='r') => {
             img.src = fp;
             img.onload = () => {
                 let rlt = tf.fromPixels(img);
-                document.body.removeChild(img);
                 img = null;
                 resolve(rlt);
             };
@@ -18,8 +17,6 @@ Image.open = async (fp, mode='r') => {
                 img = null;
                 reject(e);
             };
-            img.style.display = 'none';
-            document.body.appendChild(img);
         } else {
             try {
                 let img = tf.fromPixels(fp)

@@ -5,6 +5,10 @@ module.exports = {
     watch: {
         src: src
     },
+    babel: {
+        src: src,
+        dest: dest + '/node'
+    },
     browserify: {
         debug: true,
         bundleConfigs: [{

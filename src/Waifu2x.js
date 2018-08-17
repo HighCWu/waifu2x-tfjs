@@ -172,11 +172,8 @@ class _Waifu2x {
         let canvas = document.createElement('canvas');
         canvas.height = im.shape[0];
         canvas.width = im.shape[1];
-        canvas.display = false;
-        document.body.appendChild(canvas);
         await tf.toPixels(im, canvas);
         im = canvas.toDataURL();
-        document.body.removeChild(canvas);
         canvas = null;
 
         return im;

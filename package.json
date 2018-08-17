@@ -19,10 +19,10 @@
   "bugs": {
     "url": "https://github.com/HighCWu/waifu2x-tfjs/issues"
   },
-  "main": "./src/index.js",
+  "main": "./build/node/index.js",
   "scripts": {
     "start": "gulp",
-    "build": "gulp build"
+    "install": "gulp build"
   },
   "dependencies": {
     "@tensorflow/tfjs": "^0.12.4"
