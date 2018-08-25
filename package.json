@@ -19,28 +19,31 @@
   "bugs": {
     "url": "https://github.com/HighCWu/waifu2x-tfjs/issues"
   },
-  "main": "./build/node/index.js",
+  "main": "./lib/index.js",
+  "module": "./es6/index.js",
+  "browse": {
+    "./dist/index.js": "./lib/index.js"
+  },
   "scripts": {
-    "start": "gulp",
-    "install": "gulp build"
+    "start": "rollup -cw",
+    "build": "rollup -c",
+    "prepare": "rimraf ./es6/ ./dist/ && npm run build",
+    "example": "npm i && npm run build && cd example/parcel/ && npm i ../.. && npm i && npm start"
   },
   "dependencies": {
-    "@tensorflow/tfjs": "^0.12.4"
+    "@tensorflow/tfjs": "^0.12.5"
   },
   "devDependencies": {
-    "babel-core": "^6.26.3",
-    "babel-plugin-transform-runtime": "^6.23.0",
-    "babel-preset-env": "^1.7.0",
-    "babelify": "^8.0.0",
-    "browser-sync": "^2.24.6",
-    "browserify": "^16.2.2",
-    "gulp": "^3.8.10",
-    "gulp-babel": "^7.0.1",
-    "gulp-notify": "^3.2.0",
-    "gulp-util": "^3.0.1",
-    "pretty-hrtime": "^1.0.3",
-    "require-dir": "^1.0.0",
-    "vinyl-source-stream": "^2.0.0",
-    "watchify": "^3.11.0"
+    "@babel/core": "^7.0.0-rc.3",
+    "@babel/plugin-transform-regenerator": "^7.0.0-rc.3",
+    "@babel/plugin-transform-runtime": "^7.0.0-rc.3",
+    "@babel/preset-env": "^7.0.0-rc.3",
+    "@babel/runtime": "^7.0.0-rc.3",
+    "rimraf": "^2.6.2",
+    "rollup": "^0.65.0",
+    "rollup-plugin-auto-external": "^2.0.0",
+    "rollup-plugin-babel": "^4.0.0-beta.8",
+    "rollup-plugin-commonjs": "^9.1.6",
+    "rollup-plugin-node-resolve": "^3.3.0"
   }
 }

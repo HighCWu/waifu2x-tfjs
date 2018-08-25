@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" type="text/css">
+    <meta charset="UTF-8">
+
+    <title>waifu2x-tfjs</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="https://cdn.bootcss.com/material-design-lite/1.3.0/material.indigo-pink.min.css" />
+    <script src="https://cdn.bootcss.com/material-design-lite/1.3.0/material.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+</head>
+
+<body>
+
+    <div id="container"></div>
+    <script src="../../dist/index.js"></script>
+    <script>
+        Waifu2x(["https://highcwu.github.io/waifu2x-tfjs/waifu2x/models/vgg_7/art/scale2.0x_model.json"])
+            .then(waifu => { console.log(window.waifu = waifu) })
+    </script>
+
+</body>
+
+</html>
