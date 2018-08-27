@@ -7,7 +7,7 @@ let ImageViewer = require('./image-viewer.jsx');
 let Icon = require('./icon.jsx');
 let Progress = require('./progress.jsx');
 
-const ROOT = 'https://cdn.rawgit.com/nagadomi/waifu2x/7f6af49d';
+const ROOT = 'https://gitcdn.link/cdn/nagadomi/waifu2x/7f6af49d';
 const MODEL_DIR = `${ROOT}/models/vgg_7`;
 const ARTWORK_DIR = `${MODEL_DIR}/art`;
 const ARTWORK_Y_DIR = `${MODEL_DIR}/art_y`;
