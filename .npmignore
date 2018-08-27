@@ -11,11 +11,9 @@ shrinkwrap.yaml
 # for example pnpm-debug.log
 *.log
 
-# parcel's cache
-.cache/
+# examples
+example/
 
-# built files
-dist/
-es6/
-lib/
+# source files
+src/
 
