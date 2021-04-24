@@ -48,13 +48,11 @@ export class Predictor {
   /** @hidden */
   private _params: Array<ParamsObject> = [];
   /** @hidden */
-  private _moduleList: Array<tf.layers.Layer> = [];
+  private _model: tf.LayersModel | null = null;
   /** @hidden */
-  private _moduleInputChannelList: Array<number> = [];
+  private _blockSize = 0;
   /** @hidden */
-  private _blockSize = 32;
-  /** @hidden */
-  private _blockSizeEx = 34;
+  private _blockSizeEx = 0;
 
   /**
    * Construct a new `Predictor` for Waifu2X prediction.
@@ -62,8 +60,7 @@ export class Predictor {
    * @param blockSize - The size of a single block when dividing an image into multiple blocks for processing
    */
   constructor(modelUrl: string, blockSize = 32) {
-    this._blockSize = blockSize;
-    this._blockSizeEx = blockSize + 2;
+    this._blockSize = this._blockSizeEx = blockSize;
     this._modelFetchPromise = new Promise<void>((resolve, reject) => {
       fetch(modelUrl)
         .then(
@@ -111,91 +108,37 @@ export class Predictor {
 
   /** @hidden */
   private _loadModel() {
-    for (const param of this._params) {
+    this._blockSizeEx = this._blockSize + (this._params.length + 1) * 2;
+    const input = tf.layers.input({
+      shape: [
+        this._blockSizeEx,
+        this._blockSizeEx,
+        this._params[0].nInputPlane,
+      ],
+      dtype: 'float32',
+    });
+    let out = input;
+    for (let i = 0; i < this._params.length; ++i) {
+      const param = this._params[i];
       const layer = tf.layers.conv2d({
         filters: param.nOutputPlane,
         kernelSize: [param.kH, param.kW],
         kernelInitializer: 'zeros',
-        padding: 'valid',
+        padding: 'same',
+        weights: [
+          tf.tensor(param.weight).transpose([2, 3, 1, 0]),
+          tf.tensor(param.bias),
+        ],
         useBias: true,
       });
       layer.trainable = false;
-      this._moduleList.push(layer);
-      this._moduleList.push(tf.layers.leakyReLU({ alpha: 0.1 }));
-      this._moduleInputChannelList.push(param.nInputPlane);
-    }
-    this._moduleList.pop();
-    this._initialized = true;
-  }
-
-  /** @hidden */
-  async _divideAndConquer(
-    layer: tf.layers.Layer,
-    input: tf.Tensor4D
-  ): Promise<tf.Tensor4D> {
-    if (layer.getClassName() === 'Conv2D') {
-      const height = input.shape[1] === null ? 1 : input.shape[1];
-      const width = input.shape[2] === null ? 1 : input.shape[2];
-      const padH =
-        height % this._blockSize === 0
-          ? 0
-          : Math.ceil(height / this._blockSize) * this._blockSize - height;
-      const padW =
-        width % this._blockSize === 0
-          ? 0
-          : Math.ceil(width / this._blockSize) * this._blockSize - width;
-      const x = tf.mirrorPad(
-        input,
-        [
-          [0, 0],
-          [1, padH + 1],
-          [1, padW + 1],
-          [0, 0],
-        ],
-        'reflect'
-      );
-
-      const height2 = x.shape[1];
-      const width2 = x.shape[2];
-
-      const stepProgress =
-        1 /
-          this._moduleList.length /
-          (((height2 - 2) / this._blockSize) *
-            ((width2 - 2) / this._blockSize)) -
-        1e-9;
-
-      const hList: Array<tf.Tensor4D> = [];
-      for (let iHDiv = 0; iHDiv < (height2 - 2) / this._blockSize; ++iHDiv) {
-        const wList: Array<tf.Tensor4D> = [];
-        for (let iWDiv = 0; iWDiv < (width2 - 2) / this._blockSize; ++iWDiv) {
-          const slc = x.slice(
-            [0, iHDiv * this._blockSize, iWDiv * this._blockSize, 0],
-            [1, this._blockSizeEx, this._blockSizeEx, x.shape[3]]
-          );
-          const wDiv = <tf.Tensor4D>layer.call(slc, {});
-          slc.dispose();
-          wList.push(wDiv);
-
-          this._modelPredictProgress += stepProgress;
-          this._modelPredictCallback(this._modelFetchProgress);
-        }
-        const hDiv = tf.concat(wList, 2);
-        for (const tensor of wList) tensor.dispose();
-        hList.push(hDiv);
+      out = <tf.SymbolicTensor>layer.apply(out);
+      if (i + 1 != this._params.length) {
+        out = <tf.SymbolicTensor>tf.layers.leakyReLU({ alpha: 0.1 }).apply(out);
       }
-
-      x.dispose();
-      const y = tf.concat(hList, 1);
-      for (const tensor of hList) tensor.dispose();
-      const rlt = y.slice([0, 0, 0, 0], [1, height, width, y.shape[3]]);
-      y.dispose();
-
-      return rlt;
-    } else {
-      const y = <tf.Tensor4D>layer.call(input, {});
-      return y;
     }
+    this._model = tf.model({ inputs: input, outputs: out });
+    this._initialized = true;
   }
 
   /**
@@ -211,71 +154,89 @@ export class Predictor {
     if (!this._initialized) this._loadModel();
     const img: Image = new Image(image);
     if (!img.initialized) await img.waitForReader();
-    let x: tf.Tensor4D = tf.zeros([1, 1, 1, 1], 'float32');
-    x.dispose();
-    for (let idx = 0; idx < this._moduleList.length; ++idx) {
-      this._modelPredictProgress = Math.max(
-        0,
-        idx / this._moduleList.length - 1e-9
-      );
-      this._modelPredictCallback(this._modelPredictProgress);
-      const layer = this._moduleList[idx];
-      const inputChannel = this._moduleInputChannelList[idx];
-      if (idx === 0) {
-        if (inputChannel === 1) {
-          img.mode = 'YCbCr';
-          const _x = img.tensor;
-          const _x1 = _x.slice([0, 0, 0], [x.shape[0], x.shape[1], 1]);
-          _x.dispose();
-          x = _x1.expandDims(0);
-          _x1.dispose();
-        } else {
-          const _x = img.tensor;
-          x = _x.expandDims(0);
-          _x.dispose();
-        }
-        if (!isNoise) {
-          x = tf.image.resizeNearestNeighbor(x, [
-            x.shape[1] * 2,
-            x.shape[2] * 2,
-          ]);
-        }
-      }
-      if (!layer.built) {
-        tf.tidy(() => {
-          let t: tf.Tensor4D = tf.zeros(
-            [1, this._blockSizeEx, this._blockSizeEx, inputChannel],
-            'float32'
-          );
-          let idxSetWeight = 0;
-          for (const _layer of this._moduleList) {
-            _layer.build([this._blockSizeEx, this._blockSizeEx, t.shape[3]]);
-            t = <tf.Tensor4D>_layer.call(t, {});
-            t = tf.zeros(
-              [1, this._blockSizeEx, this._blockSizeEx, t.shape[3]],
-              'float32'
-            );
-            if (_layer.getClassName() === 'Conv2D') {
-              _layer.setWeights([
-                tf
-                  .tensor(this._params[idxSetWeight].weight)
-                  .transpose([2, 3, 1, 0]),
-                tf.tensor(this._params[idxSetWeight].bias),
-              ]);
-              idxSetWeight++;
-            }
-          }
-        });
-      }
-      const _x = x;
-      x = await this._divideAndConquer(layer, x);
+
+    const inputChannel = this._params[0].nInputPlane;
+    let x: tf.Tensor4D | null;
+    if (inputChannel === 1) {
+      img.mode = 'YCbCr';
+      const _x = <tf.Tensor3D>img.tensor;
+      x = <tf.Tensor4D>_x.expandDims(0);
+      _x.dispose();
+    } else {
+      const _x = img.tensor;
+      x = <tf.Tensor4D>_x.expandDims(0);
       _x.dispose();
     }
+    if (!isNoise) {
+      x = tf.image.resizeNearestNeighbor(x, [x.shape[1] * 2, x.shape[2] * 2]);
+    }
+
+    const exValue = this._params.length + 1;
+    const height = x.shape[1];
+    const width = x.shape[2];
+    const hNBlock = Math.ceil(x.shape[1] / this._blockSize);
+    const wNBlock = Math.ceil(x.shape[2] / this._blockSize);
+    const stepProgress = 1 / (hNBlock * wNBlock);
+    const padH =
+      this._blockSize -
+      (x.shape[1] % this._blockSize === 0
+        ? this._blockSize
+        : x.shape[1] % this._blockSize) +
+      exValue;
+    const padW =
+      this._blockSize -
+      (x.shape[2] % this._blockSize === 0
+        ? this._blockSize
+        : x.shape[2] % this._blockSize) +
+      exValue;
+    const _x = x;
+    x = tf.mirrorPad(
+      x,
+      [
+        [0, 0],
+        [exValue, padH],
+        [exValue, padW],
+        [0, 0],
+      ],
+      'reflect'
+    );
+    _x.dispose();
+
+    const hList: Array<tf.Tensor4D> = [];
+    for (let iHDiv = 0; iHDiv < hNBlock; ++iHDiv) {
+      const wList: Array<tf.Tensor4D> = [];
+      for (let iWDiv = 0; iWDiv < wNBlock; ++iWDiv) {
+        const slc = x.slice(
+          [0, iHDiv * this._blockSize, iWDiv * this._blockSize, 0],
+          [1, this._blockSizeEx, this._blockSizeEx, x.shape[3]]
+        );
+        const wDiv = <tf.Tensor4D>(this._model as tf.LayersModel).predict(slc);
+        slc.dispose();
+        wList.push(
+          wDiv.slice(
+            [0, exValue, exValue, 0],
+            [1, this._blockSize, this._blockSize, wDiv.shape[3]]
+          )
+        );
+        wDiv.dispose();
+
+        this._modelPredictProgress += stepProgress;
+        this._modelPredictCallback(this._modelFetchProgress);
+      }
+      const hDiv = tf.concat(wList, 2);
+      for (const tensor of wList) tensor.dispose();
+      hList.push(hDiv);
+    }
+
+    x.dispose();
+    const y = tf.concat(hList, 1);
+    for (const tensor of hList) tensor.dispose();
+    const rlt = y.slice([0, 0, 0, 0], [1, height, width, y.shape[3]]);
+    y.dispose();
+
     img.tensor = tf.tidy(() => {
       let imgTensor: tf.Tensor3D = img.tensor;
-      const _x = x;
-      const y = <tf.Tensor3D>x.clipByValue(0, 1).squeeze([0]);
-      _x.dispose();
+      const y = <tf.Tensor3D>rlt.clipByValue(0, 1).squeeze([0]);
       if (img.mode === 'YCbCr') {
         if (!isNoise) {
           imgTensor = tf.image.resizeNearestNeighbor(imgTensor, [
@@ -314,8 +275,6 @@ export class Predictor {
     this._initialized = false;
     this._modelFetchProgress = 0;
     this._modelPredictProgress = 0;
-    for (const layer of this._moduleList) {
-      layer.dispose();
-    }
+    this._model?.dispose();
   }
 }
