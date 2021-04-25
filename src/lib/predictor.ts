@@ -221,7 +221,7 @@ export class Predictor {
         wDiv.dispose();
 
         this._modelPredictProgress += stepProgress;
-        this._modelPredictCallback(this._modelFetchProgress);
+        this._modelPredictCallback(this._modelPredictProgress);
       }
       const hDiv = tf.concat(wList, 2);
       for (const tensor of wList) tensor.dispose();
