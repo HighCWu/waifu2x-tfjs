@@ -1,0 +1,23 @@
+{
+  "name": "waifu2x-tfjs-example",
+  "version": "1.0.0",
+  "license": "MIT",  
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview",
+    "postinstall": "cd node_modules/waifu2x-tfjs && yarn && yarn build"
+  },
+  "dependencies": {
+    "comlink": "^4.3.0",
+    "vue": "^3.0.5",
+    "vue-upload-component": "^3.0.50",
+    "waifu2x-tfjs": "HighCWu/waifu2x-tfjs#v1.0.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^1.2.1",
+    "@vue/compiler-sfc": "^3.0.5",
+    "vite": "^2.1.5",
+    "vite-plugin-resolve-externals": "^0.1.0"
+  }
+}
