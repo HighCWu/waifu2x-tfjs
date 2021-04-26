@@ -9,6 +9,8 @@
 - [nagadomi/waifu2x](https://github.com/nagadomi/waifu2x) .
 - [lon9/waifu2x-keras](https://github.com/lon9/waifu2x-keras) .
 
+## [Documentation](https://highcwu.github.io/waifu2x-tfjs/)
+
 ## Demo
 
 waifu2x-tfjs scales your images up, or de-noise.
