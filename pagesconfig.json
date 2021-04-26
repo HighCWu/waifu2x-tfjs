@@ -1,0 +1,13 @@
+{
+    "groups": [
+        {
+            "title": "example",
+            "pages": [
+                {
+                    "title": "My Page",
+                    "source": "./docs/example/index.md"
+                }
+            ]
+        }
+    ]
+}
