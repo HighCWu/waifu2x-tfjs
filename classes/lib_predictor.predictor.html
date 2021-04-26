@@ -7,7 +7,7 @@
 	<meta name="description" content="Documentation for waifu2x-tfjs">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
-	<script async src="../assets/js/search.js" id="search-script"></script>
+	<link rel="stylesheet" href="../assets/css/pages.css">
 </head>
 <body>
 <header>
@@ -41,6 +41,8 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -52,7 +54,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../modules.html">waifu2x-tfjs</a>
+					<a href="../modules.html">Globals</a>
 				</li>
 				<li>
 					<a href="../modules/lib_predictor.html">lib/predictor</a>
@@ -111,13 +113,13 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Predictor<span class="tsd-signature-symbol">(</span>modelUrl<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, blockSize<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="lib_predictor.predictor.html" class="tsd-signature-type" data-tsd-kind="Class">Predictor</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Predictor<span class="tsd-signature-symbol">(</span>modelUrl<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, blockSize<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="lib_predictor.predictor.html" class="tsd-signature-type">Predictor</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/HighCWu/waifu2x-tfjs/blob/b0fbfa0/src/lib/predictor.ts#L55">lib/predictor.ts:55</a></li>
+									<li>Defined in <a href="https://github.com/HighCWu/waifu2x-tfjs/blob/95b5385/src/lib/predictor.ts#L55">lib/predictor.ts:55</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -140,7 +142,7 @@
 									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="lib_predictor.predictor.html" class="tsd-signature-type" data-tsd-kind="Class">Predictor</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="lib_predictor.predictor.html" class="tsd-signature-type">Predictor</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -157,7 +159,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/HighCWu/waifu2x-tfjs/blob/b0fbfa0/src/lib/predictor.ts#L274">lib/predictor.ts:274</a></li>
+									<li>Defined in <a href="https://github.com/HighCWu/waifu2x-tfjs/blob/95b5385/src/lib/predictor.ts#L274">lib/predictor.ts:274</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -180,7 +182,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/HighCWu/waifu2x-tfjs/blob/b0fbfa0/src/lib/predictor.ts#L97">lib/predictor.ts:97</a></li>
+									<li>Defined in <a href="https://github.com/HighCWu/waifu2x-tfjs/blob/95b5385/src/lib/predictor.ts#L97">lib/predictor.ts:97</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -228,7 +230,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/HighCWu/waifu2x-tfjs/blob/b0fbfa0/src/lib/predictor.ts#L105">lib/predictor.ts:105</a></li>
+									<li>Defined in <a href="https://github.com/HighCWu/waifu2x-tfjs/blob/95b5385/src/lib/predictor.ts#L105">lib/predictor.ts:105</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -276,7 +278,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/HighCWu/waifu2x-tfjs/blob/b0fbfa0/src/lib/predictor.ts#L150">lib/predictor.ts:150</a></li>
+									<li>Defined in <a href="https://github.com/HighCWu/waifu2x-tfjs/blob/95b5385/src/lib/predictor.ts#L150">lib/predictor.ts:150</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -308,6 +310,15 @@
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
+					<li class="label pp-nav pp-group">
+						<span>example</span>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../pages/example/index.html">My <wbr>Page</a>
+					</li>
+					<li class="label pp-nav pp-group">
+						<span>API</span>
+					</li>
 					<li class=" ">
 						<a href="../modules.html">Exports</a>
 					</li>
@@ -370,5 +381,6 @@
 </div>
 <div class="overlay"></div>
 <script src="../assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.json"><' + '/script>');</script>
 </body>
 </html>
