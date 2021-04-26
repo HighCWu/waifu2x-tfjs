@@ -1,13 +1,13 @@
 {
-    "groups": [
+  "groups": [
+    {
+      "title": "example",
+      "pages": [
         {
-            "title": "example",
-            "pages": [
-                {
-                    "title": "My Page",
-                    "source": "./docs/example/index.md"
-                }
-            ]
+          "title": "Waifu2x-tfjs example",
+          "source": "./docs/example/index.md"
         }
-    ]
+      ]
+    }
+  ]
 }
