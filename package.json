@@ -12,7 +12,7 @@
     "comlink": "^4.3.0",
     "vue": "^3.0.5",
     "vue-upload-component": "^3.0.50",
-    "waifu2x-tfjs": "HighCWu/waifu2x-tfjs#v1.0.0"
+    "waifu2x-tfjs": "file:../"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^1.2.1",
