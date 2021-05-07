@@ -4,16 +4,22 @@ import fetchProgress from 'fetch-progress';
 
 import { Image } from './image';
 
-const canvas = new OffscreenCanvas(320, 200);
-let context = canvas.getContext('webgl2') as
-  | WebGLRenderingContext
-  | WebGL2RenderingContext
-  | null;
-if (!context) {
-  context = canvas.getContext('webgl');
-  if (context) tf_webgl.setWebGLContext(1, context as WebGLRenderingContext);
-} else {
-  tf_webgl.setWebGLContext(2, context as WebGL2RenderingContext);
+// Some browsers still do not support off-screen canvas,
+// so make some compatibility judgments.
+// However, if there is no off-screen canvas supported,
+// the library cannot be run under a web worker.
+if (self.OffscreenCanvas !== undefined) {
+  const canvas = new OffscreenCanvas(320, 200);
+  let context = canvas.getContext('webgl2') as
+    | WebGLRenderingContext
+    | WebGL2RenderingContext
+    | null;
+  if (!context) {
+    context = canvas.getContext('webgl');
+    if (context) tf_webgl.setWebGLContext(1, context as WebGLRenderingContext);
+  } else {
+    tf_webgl.setWebGLContext(2, context as WebGL2RenderingContext);
+  }
 }
 
 class ParamsObject {
@@ -70,6 +76,10 @@ export class Predictor {
                 0,
                 progress.transferred / progress.total - 0.001
               );
+              // Sometimes, the compressed data will return the wrong file size,
+              // making the progress more than 100%. So limit it.
+              if (this._modelFetchProgress > 0.99)
+                this._modelFetchProgress = 0.99;
               this._modelFetchCallback(this._modelFetchProgress);
             },
             onError: (e) => {
