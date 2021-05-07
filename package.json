@@ -1,6 +1,6 @@
 {
   "name": "waifu2x-tfjs",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Image super-resolution using tensorflow.js",
   "author": "HighCWu <highcwu@163.com>",
   "keywords": [
